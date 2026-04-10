@@ -45,9 +45,10 @@ class BlogBloc extends Bloc<BlogEvent, BlogState> {
     emit(BlogLoading());
     final res = await _getAllBlogs(NoParams());
 
-    res.fold(
-      (l) => emit(BlogFailure(l.message)),
-      (r) => emit(BlogDisplaySuccess(r)),
-    );
+    res.fold((l) => emit(BlogFailure(l.message)), (r) {
+      final sortedBlogs = List<Blog>.from(r)
+        ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+      emit(BlogDisplaySuccess(sortedBlogs));
+    });
   }
 }

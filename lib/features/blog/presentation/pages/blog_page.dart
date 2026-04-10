@@ -37,9 +37,6 @@ class _BlogPageState extends State<BlogPage> {
   @override
   Widget build(BuildContext context) {
     final appUserState = context.watch<AppUserCubit>().state;
-    final userName = appUserState is AppUserLoggedIn
-        ? appUserState.user.name
-        : 'Blog User';
     final userEmail = appUserState is AppUserLoggedIn
         ? appUserState.user.email
         : 'user@example.com';
