@@ -44,8 +44,10 @@ class _BlogPageState extends State<BlogPage> {
           title: const Text("My Blogs"),
           actions: [
             IconButton(
-              onPressed: () {
-                Navigator.push(context, AddBlogPage.route());
+              onPressed: () async {
+                await Navigator.push(context, AddBlogPage.route());
+                if (!mounted) return;
+                context.read<BlogBloc>().add(BlogGetAll());
               },
               icon: const Icon(CupertinoIcons.add_circled),
             ),
