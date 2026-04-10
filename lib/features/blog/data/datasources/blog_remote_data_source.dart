@@ -62,9 +62,11 @@ class BlogRemoteDataSourceImpl implements BlogRemoteDataSource {
 
       return blogs
           .map(
-            (blog) => BlogModel.fromJson(
-              blog,
-            ).copyWith(posterName: blog['profiles']['name']),
+            (blog) => BlogModel.fromJson(blog).copyWith(
+              posterName:
+                  (blog['profiles'] as Map<String, dynamic>?)?['name']
+                      as String?,
+            ),
           )
           .toList();
     } on PostgrestException catch (e) {
