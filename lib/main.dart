@@ -1,5 +1,6 @@
 import 'package:blog_app/config/theme/theme.dart';
 import 'package:blog_app/core/cubits/app_user/app_user_cubit.dart';
+import 'package:blog_app/core/widgets/loader.dart';
 import 'package:blog_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:blog_app/features/auth/presentation/pages/login_page.dart';
 import 'package:blog_app/features/blog/presentation/bloc/blog_bloc.dart';
@@ -43,13 +44,12 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       title: 'Blog App',
       theme: AppTheme.darkThemeMode,
-      home: BlocSelector<AppUserCubit, AppUserState, bool>(
-        selector: (state) {
-          return state is AppUserLoggedIn;
-        },
+      home: BlocBuilder<AppUserCubit, AppUserState>(
         builder: (context, state) {
-          // state will tell isUserLoggedIn
-          if (state) {
+          if (state is AppUserLoading) {
+            return const Scaffold(body: Loader());
+          }
+          if (state is AppUserLoggedIn) {
             return BlogPage();
           }
           return LoginPage();

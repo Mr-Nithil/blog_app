@@ -19,12 +19,12 @@ class BlogBloc extends Bloc<BlogEvent, BlogState> {
     : _uploadBlog = uploadBlog,
       _getAllBlogs = getAllBlogs,
       super(BlogInitial()) {
-    on<BlogEvent>((event, emit) => emit(BlogLoading()));
     on<BlogUpload>(_onBlogUpload);
     on<BlogGetAll>(_onBlogGetAll);
   }
 
   void _onBlogUpload(BlogUpload event, Emitter<BlogState> emit) async {
+    emit(BlogLoading());
     final res = await _uploadBlog(
       UploadBlogParams(
         image: event.image,
@@ -42,6 +42,7 @@ class BlogBloc extends Bloc<BlogEvent, BlogState> {
   }
 
   void _onBlogGetAll(BlogGetAll event, Emitter<BlogState> emit) async {
+    emit(BlogLoading());
     final res = await _getAllBlogs(NoParams());
 
     res.fold(

@@ -67,7 +67,7 @@ class _BlogPageState extends State<BlogPage> {
             }
           },
           builder: (context, state) {
-            if (state is BlogLoading) {
+            if (state is BlogInitial || state is BlogLoading) {
               return const Loader();
             }
             if (state is BlogDisplaySuccess) {
