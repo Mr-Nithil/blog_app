@@ -14,9 +14,11 @@ class AppTheme {
       side: BorderSide.none,
     ),
     inputDecorationTheme: InputDecorationTheme(
+      border: _border(),
       contentPadding: const EdgeInsets.all(27),
       enabledBorder: _border(),
       focusedBorder: _border(AppPalette.gradient2),
+      errorBorder: _border(AppPalette.errorColor),
     ),
     appBarTheme: AppBarTheme(backgroundColor: AppPalette.backgroundColor),
   );
