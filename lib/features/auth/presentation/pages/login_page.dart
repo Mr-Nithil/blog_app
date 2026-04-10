@@ -1,4 +1,3 @@
-import 'package:blog_app/config/theme/app_palette.dart';
 import 'package:blog_app/core/utils/show_snackbar.dart';
 import 'package:blog_app/core/widgets/loader.dart';
 import 'package:blog_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -6,6 +5,7 @@ import 'package:blog_app/features/auth/presentation/pages/signup_page.dart';
 import 'package:blog_app/features/auth/presentation/widgets/auth_field.dart';
 import 'package:blog_app/features/auth/presentation/widgets/auth_gradient_button.dart';
 import 'package:blog_app/features/blog/presentation/pages/blog_page.dart';
+import 'package:blog_app/core/cubits/theme/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -31,7 +31,32 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          BlocBuilder<ThemeCubit, ThemeMode>(
+            builder: (context, mode) {
+              final isDark =
+                  mode == ThemeMode.dark ||
+                  (mode == ThemeMode.system &&
+                      theme.brightness == Brightness.dark);
+
+              return IconButton(
+                tooltip: isDark
+                    ? 'Switch to light mode'
+                    : 'Switch to dark mode',
+                onPressed: () => context.read<ThemeCubit>().toggleTheme(),
+                icon: Icon(
+                  isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                ),
+              );
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: BlocConsumer<AuthBloc, AuthState>(
@@ -95,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
                             text: "Sign Up",
                             style: Theme.of(context).textTheme.titleMedium
                                 ?.copyWith(
-                                  color: AppPalette.gradient2,
+                                  color: theme.colorScheme.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
                           ),

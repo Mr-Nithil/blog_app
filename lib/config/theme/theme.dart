@@ -2,24 +2,195 @@ import 'package:blog_app/config/theme/app_palette.dart';
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static _border([Color color = AppPalette.borderColor]) => OutlineInputBorder(
-    borderSide: BorderSide(color: color, width: 3),
-    borderRadius: BorderRadius.circular(10),
+  static OutlineInputBorder _border(Color color) => OutlineInputBorder(
+    borderSide: BorderSide(color: color, width: 1),
+    borderRadius: BorderRadius.circular(16),
   );
 
-  static final darkThemeMode = ThemeData.dark().copyWith(
-    scaffoldBackgroundColor: AppPalette.backgroundColor,
-    chipTheme: ChipThemeData(
-      color: const MaterialStatePropertyAll(AppPalette.backgroundColor),
-      side: BorderSide.none,
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-      border: _border(),
-      contentPadding: const EdgeInsets.all(27),
-      enabledBorder: _border(),
-      focusedBorder: _border(AppPalette.gradient2),
-      errorBorder: _border(AppPalette.errorColor),
-    ),
-    appBarTheme: AppBarTheme(backgroundColor: AppPalette.backgroundColor),
+  static ThemeData _buildTheme({
+    required Brightness brightness,
+    required Color scaffoldBackgroundColor,
+    required Color secondaryBackgroundColor,
+    required Color surfaceColor,
+    required Color borderColor,
+    required Color primaryTextColor,
+    required Color secondaryTextColor,
+    required Color disabledTextColor,
+    required Color accentColor,
+    required Color accentSoftColor,
+    required Color chipBackgroundColor,
+    required Color chipTextColor,
+    required Color elevatedSurfaceColor,
+  }) {
+    final baseTheme = brightness == Brightness.dark
+        ? ThemeData.dark(useMaterial3: true)
+        : ThemeData.light(useMaterial3: true);
+
+    final colorScheme = ColorScheme(
+      brightness: brightness,
+      primary: accentColor,
+      onPrimary: Colors.white,
+      secondary: accentColor,
+      onSecondary: Colors.white,
+      error: AppPalette.errorColor,
+      onError: Colors.white,
+      surface: surfaceColor,
+      onSurface: primaryTextColor,
+      surfaceContainerHighest: elevatedSurfaceColor,
+      onSurfaceVariant: secondaryTextColor,
+      outline: borderColor,
+      outlineVariant: borderColor,
+      tertiary: accentSoftColor,
+      onTertiary: primaryTextColor,
+      primaryContainer: accentSoftColor,
+      onPrimaryContainer: primaryTextColor,
+      secondaryContainer: accentSoftColor,
+      onSecondaryContainer: primaryTextColor,
+      surfaceTint: accentColor,
+      inverseSurface: secondaryBackgroundColor,
+      onInverseSurface: primaryTextColor,
+      inversePrimary: accentColor,
+      shadow: AppPalette.shadowColor,
+      scrim: Colors.black,
+    );
+
+    return baseTheme.copyWith(
+      colorScheme: colorScheme,
+      scaffoldBackgroundColor: scaffoldBackgroundColor,
+      appBarTheme: AppBarTheme(
+        backgroundColor: scaffoldBackgroundColor,
+        foregroundColor: primaryTextColor,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: false,
+        iconTheme: IconThemeData(color: secondaryTextColor),
+        titleTextStyle: TextStyle(
+          color: primaryTextColor,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      cardTheme: CardThemeData(
+        color: surfaceColor,
+        elevation: brightness == Brightness.dark ? 0 : 1,
+        shadowColor: AppPalette.shadowColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: borderColor),
+        ),
+        margin: EdgeInsets.zero,
+      ),
+      dividerTheme: DividerThemeData(color: borderColor, thickness: 1),
+      chipTheme: ChipThemeData(
+        backgroundColor: chipBackgroundColor,
+        selectedColor: accentSoftColor,
+        labelStyle: TextStyle(
+          color: chipTextColor,
+          fontWeight: FontWeight.w600,
+        ),
+        side: BorderSide(color: borderColor),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: secondaryBackgroundColor,
+        border: _border(borderColor),
+        enabledBorder: _border(borderColor),
+        focusedBorder: _border(accentColor),
+        errorBorder: _border(AppPalette.errorColor),
+        focusedErrorBorder: _border(AppPalette.errorColor),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
+        hintStyle: TextStyle(color: disabledTextColor),
+        labelStyle: TextStyle(color: secondaryTextColor),
+      ),
+      textTheme: baseTheme.textTheme
+          .apply(bodyColor: primaryTextColor, displayColor: primaryTextColor)
+          .copyWith(
+            bodyMedium: TextStyle(color: primaryTextColor, height: 1.5),
+            bodySmall: TextStyle(color: secondaryTextColor, height: 1.4),
+            titleLarge: TextStyle(
+              color: primaryTextColor,
+              fontWeight: FontWeight.w700,
+              height: 1.2,
+            ),
+            titleMedium: TextStyle(
+              color: primaryTextColor,
+              fontWeight: FontWeight.w600,
+              height: 1.2,
+            ),
+          ),
+      iconTheme: IconThemeData(color: secondaryTextColor),
+      primaryIconTheme: IconThemeData(color: accentColor),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: accentColor,
+          foregroundColor: Colors.white,
+          disabledBackgroundColor: accentColor.withOpacity(0.55),
+          disabledForegroundColor: Colors.white.withOpacity(0.72),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          textStyle: const TextStyle(fontWeight: FontWeight.w700),
+          elevation: 0,
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: primaryTextColor,
+          side: BorderSide(color: borderColor),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: accentColor,
+        foregroundColor: Colors.white,
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: elevatedSurfaceColor,
+        contentTextStyle: TextStyle(color: primaryTextColor),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ),
+    );
+  }
+
+  static final lightThemeMode = _buildTheme(
+    brightness: Brightness.light,
+    scaffoldBackgroundColor: AppPalette.lightBackground,
+    secondaryBackgroundColor: AppPalette.lightSecondaryBackground,
+    surfaceColor: AppPalette.lightSurface,
+    borderColor: AppPalette.lightBorder,
+    primaryTextColor: AppPalette.lightPrimaryText,
+    secondaryTextColor: AppPalette.lightSecondaryText,
+    disabledTextColor: AppPalette.lightDisabledText,
+    accentColor: AppPalette.lightAccent,
+    accentSoftColor: AppPalette.lightAccentSoft,
+    chipBackgroundColor: AppPalette.lightBorder,
+    chipTextColor: AppPalette.lightPrimaryText,
+    elevatedSurfaceColor: AppPalette.lightElevatedSurface,
+  );
+
+  static final darkThemeMode = _buildTheme(
+    brightness: Brightness.dark,
+    scaffoldBackgroundColor: AppPalette.darkBackground,
+    secondaryBackgroundColor: AppPalette.darkSecondaryBackground,
+    surfaceColor: AppPalette.darkSurface,
+    borderColor: AppPalette.darkBorder,
+    primaryTextColor: AppPalette.darkPrimaryText,
+    secondaryTextColor: AppPalette.darkSecondaryText,
+    disabledTextColor: AppPalette.darkDisabledText,
+    accentColor: AppPalette.darkAccent,
+    accentSoftColor: AppPalette.darkAccentSoft,
+    chipBackgroundColor: AppPalette.chipDarkBackground,
+    chipTextColor: AppPalette.chipDarkText,
+    elevatedSurfaceColor: AppPalette.darkElevatedSurface,
   );
 }

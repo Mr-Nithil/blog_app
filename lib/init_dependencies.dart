@@ -1,5 +1,6 @@
 import 'package:blog_app/config/env/env.dart';
 import 'package:blog_app/core/cubits/app_user/app_user_cubit.dart';
+import 'package:blog_app/core/cubits/theme/theme_cubit.dart';
 import 'package:blog_app/core/network/connection_checker.dart';
 import 'package:blog_app/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:blog_app/features/auth/data/repository/auth_repository_impl.dart';
@@ -16,7 +17,6 @@ import 'package:blog_app/features/blog/domain/Repository/blog_repository.dart';
 import 'package:blog_app/features/blog/domain/usecases/get_all_blogs.dart';
 import 'package:blog_app/features/blog/domain/usecases/upload_blog.dart';
 import 'package:blog_app/features/blog/presentation/bloc/blog_bloc.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';

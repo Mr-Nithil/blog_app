@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:blog_app/config/theme/app_palette.dart';
 import 'package:blog_app/core/constants/constants.dart';
+import 'package:blog_app/core/cubits/theme/theme_cubit.dart';
 import 'package:blog_app/core/cubits/app_user/app_user_cubit.dart';
 import 'package:blog_app/core/utils/pick_image.dart';
 import 'package:blog_app/core/utils/show_snackbar.dart';
@@ -9,7 +9,6 @@ import 'package:blog_app/core/widgets/loader.dart';
 import 'package:blog_app/features/blog/presentation/bloc/blog_bloc.dart';
 import 'package:blog_app/features/blog/presentation/pages/blog_page.dart';
 import 'package:blog_app/features/blog/presentation/widgets/blog_editor.dart';
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -67,15 +66,38 @@ class _AddBlogPageState extends State<AddBlogPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Create blog'),
         actions: [
+          BlocBuilder<ThemeCubit, ThemeMode>(
+            builder: (context, mode) {
+              final isDark =
+                  mode == ThemeMode.dark ||
+                  (mode == ThemeMode.system &&
+                      theme.brightness == Brightness.dark);
+
+              return IconButton(
+                tooltip: isDark
+                    ? 'Switch to light mode'
+                    : 'Switch to dark mode',
+                onPressed: () => context.read<ThemeCubit>().toggleTheme(),
+                icon: Icon(
+                  isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                ),
+              );
+            },
+          ),
           IconButton(
+            tooltip: 'Publish blog',
             onPressed: () {
               uploadBlog();
             },
-            icon: Icon(Icons.done_rounded),
+            icon: const Icon(Icons.done_rounded),
           ),
+          const SizedBox(width: 8),
         ],
       ),
       body: BlocConsumer<BlogBloc, BlogState>(
@@ -96,95 +118,108 @@ class _AddBlogPageState extends State<AddBlogPage> {
           }
           return SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16),
               child: Form(
                 key: formKey,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    image != null
-                        ? GestureDetector(
-                            onTap: selectImage,
-                            child: SizedBox(
-                              height: 150,
-                              width: double.infinity,
-                              child: ClipRRect(
-                                borderRadius: BorderRadiusGeometry.circular(8),
-                                child: Image.file(image!, fit: BoxFit.cover),
-                              ),
-                            ),
-                          )
-                        : GestureDetector(
-                            onTap: () {
-                              selectImage();
-                            },
-                            child: DottedBorder(
-                              options: RectDottedBorderOptions(
-                                color: AppPalette.borderColor,
-                                dashPattern: [10, 4],
-                                strokeCap: StrokeCap.round,
-                              ),
-                              child: Container(
-                                height: 150,
+                    Text('Cover image', style: theme.textTheme.titleMedium),
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: selectImage,
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: theme.colorScheme.outline),
+                        ),
+                        child: image != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Image.file(
+                                  image!,
+                                  height: 180,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Container(
+                                height: 180,
                                 width: double.infinity,
+                                padding: const EdgeInsets.all(20),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.folder_open_outlined, size: 50),
-                                    SizedBox(height: 15),
+                                    Icon(
+                                      Icons.image_outlined,
+                                      size: 40,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                    const SizedBox(height: 12),
                                     Text(
-                                      'Select your image',
-                                      style: TextStyle(fontSize: 15),
+                                      'Tap to add a cover image',
+                                      style: theme.textTheme.titleMedium,
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      'Use a clear header image for the post.',
+                                      textAlign: TextAlign.center,
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            color: theme
+                                                .textTheme
+                                                .bodySmall
+                                                ?.color,
+                                          ),
                                     ),
                                   ],
                                 ),
                               ),
-                            ),
-                          ),
-                    SizedBox(height: 15),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: Constants.topics
-                            .map(
-                              (e) => Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    if (selectedTopics.contains(e)) {
-                                      selectedTopics.remove(e);
-                                    } else {
-                                      selectedTopics.add(e);
-                                    }
-                                    setState(() {});
-                                  },
-                                  child: Chip(
-                                    label: Text(e),
-                                    color: selectedTopics.contains(e)
-                                        ? const MaterialStatePropertyAll(
-                                            AppPalette.gradient1,
-                                          )
-                                        : null,
-                                    side: selectedTopics.contains(e)
-                                        ? null
-                                        : const BorderSide(
-                                            color: AppPalette.borderColor,
-                                          ),
-                                  ),
-                                ),
-                              ),
-                            )
-                            .toList(),
                       ),
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 24),
+                    Text('Topics', style: theme.textTheme.titleMedium),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: Constants.topics
+                          .map(
+                            (topic) => FilterChip(
+                              label: Text(topic),
+                              selected: selectedTopics.contains(topic),
+                              onSelected: (_) {
+                                if (selectedTopics.contains(topic)) {
+                                  selectedTopics.remove(topic);
+                                } else {
+                                  selectedTopics.add(topic);
+                                }
+                                setState(() {});
+                              },
+                            ),
+                          )
+                          .toList(),
+                    ),
+                    const SizedBox(height: 24),
                     BlogEditor(
                       controller: titleController,
-                      hintText: "Blog Title",
+                      hintText: 'Blog Title',
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 16),
                     BlogEditor(
                       controller: contentController,
-                      hintText: "Blog Content",
+                      hintText: 'Blog Content',
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: uploadBlog,
+                        icon: const Icon(Icons.publish_rounded),
+                        label: const Text('Publish blog'),
+                      ),
                     ),
                   ],
                 ),

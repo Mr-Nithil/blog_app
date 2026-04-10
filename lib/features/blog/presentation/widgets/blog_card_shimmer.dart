@@ -2,9 +2,7 @@ import 'package:blog_app/config/theme/app_palette.dart';
 import 'package:flutter/material.dart';
 
 class BlogCardShimmer extends StatefulWidget {
-  const BlogCardShimmer({super.key, required this.color});
-
-  final Color color;
+  const BlogCardShimmer({super.key});
 
   @override
   State<BlogCardShimmer> createState() => _BlogCardShimmerState();
@@ -31,6 +29,10 @@ class _BlogCardShimmerState extends State<BlogCardShimmer>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final baseColor = theme.colorScheme.surfaceContainerHighest;
+    final highlightColor = theme.colorScheme.onSurface.withOpacity(0.16);
+
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
@@ -41,7 +43,7 @@ class _BlogCardShimmerState extends State<BlogCardShimmer>
               end: Alignment(1.0 + (2.0 * _controller.value), 0),
               colors: [
                 AppPalette.transparentColor,
-                AppPalette.whiteColor.withOpacity(0.28),
+                highlightColor,
                 AppPalette.transparentColor,
               ],
               stops: const [0.1, 0.4, 0.7],
@@ -52,12 +54,12 @@ class _BlogCardShimmerState extends State<BlogCardShimmer>
         );
       },
       child: Container(
-        height: 200,
-        margin: EdgeInsets.all(15).copyWith(bottom: 4),
-        padding: const EdgeInsets.all(15),
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: widget.color.withOpacity(0.28),
-          borderRadius: BorderRadius.circular(10),
+          color: baseColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: theme.colorScheme.outline),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -66,22 +68,21 @@ class _BlogCardShimmerState extends State<BlogCardShimmer>
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: const [
-                      _SkeletonChip(),
-                      SizedBox(width: 8),
-                      _SkeletonChip(),
-                      SizedBox(width: 8),
-                      _SkeletonChip(width: 72),
-                    ],
-                  ),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: const [
+                    _SkeletonChip(width: 72),
+                    _SkeletonChip(width: 88),
+                    _SkeletonChip(width: 64),
+                  ],
                 ),
                 const SizedBox(height: 14),
                 const _SkeletonLine(width: double.infinity, height: 20),
                 const SizedBox(height: 10),
-                const _SkeletonLine(width: 200, height: 18),
+                const _SkeletonLine(width: 220, height: 18),
+                const SizedBox(height: 10),
+                const _SkeletonLine(width: double.infinity, height: 18),
               ],
             ),
             const _SkeletonLine(width: 70, height: 14),
@@ -99,11 +100,13 @@ class _SkeletonChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.onSurface.withOpacity(0.08);
+
     return Container(
       width: width,
       height: 28,
       decoration: BoxDecoration(
-        color: AppPalette.whiteColor.withOpacity(0.16),
+        color: color,
         borderRadius: BorderRadius.circular(20),
       ),
     );
@@ -118,11 +121,13 @@ class _SkeletonLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.onSurface.withOpacity(0.08);
+
     return Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: AppPalette.whiteColor.withOpacity(0.2),
+        color: color,
         borderRadius: BorderRadius.circular(8),
       ),
     );

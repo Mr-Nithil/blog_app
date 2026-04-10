@@ -1,5 +1,6 @@
 import 'package:blog_app/config/theme/theme.dart';
 import 'package:blog_app/core/cubits/app_user/app_user_cubit.dart';
+import 'package:blog_app/core/cubits/theme/theme_cubit.dart';
 import 'package:blog_app/core/widgets/loader.dart';
 import 'package:blog_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:blog_app/features/auth/presentation/pages/login_page.dart';
@@ -16,6 +17,7 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => serviceLocator<AppUserCubit>()),
+        BlocProvider(create: (_) => serviceLocator<ThemeCubit>()),
         BlocProvider(create: (_) => serviceLocator<AuthBloc>()),
         BlocProvider(create: (_) => serviceLocator<BlogBloc>()),
       ],
@@ -40,21 +42,27 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Blog App',
-      theme: AppTheme.darkThemeMode,
-      home: BlocBuilder<AppUserCubit, AppUserState>(
-        builder: (context, state) {
-          if (state is AppUserLoading) {
-            return const Scaffold(body: Loader());
-          }
-          if (state is AppUserLoggedIn) {
-            return BlogPage();
-          }
-          return LoginPage();
-        },
-      ),
+    return BlocBuilder<ThemeCubit, ThemeMode>(
+      builder: (context, themeMode) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Blog App',
+          theme: AppTheme.lightThemeMode,
+          darkTheme: AppTheme.darkThemeMode,
+          themeMode: themeMode,
+          home: BlocBuilder<AppUserCubit, AppUserState>(
+            builder: (context, state) {
+              if (state is AppUserLoading) {
+                return const Scaffold(body: Loader());
+              }
+              if (state is AppUserLoggedIn) {
+                return BlogPage();
+              }
+              return LoginPage();
+            },
+          ),
+        );
+      },
     );
   }
 }

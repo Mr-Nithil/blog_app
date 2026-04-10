@@ -21,6 +21,7 @@ Future<void> initDependencies() async {
   );
 
   serviceLocator.registerLazySingleton(() => AppUserCubit());
+  serviceLocator.registerLazySingleton(() => ThemeCubit());
 
   _initAuth();
   _initBlog();
