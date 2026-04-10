@@ -24,6 +24,10 @@ class BlogModel extends Blog {
     };
   }
 
+  Map<String, dynamic> toLocalJson() {
+    return <String, dynamic>{...toJson(), 'poster_name': posterName};
+  }
+
   factory BlogModel.fromJson(Map<String, dynamic> map) {
     return BlogModel(
       id: map['id'] as String,

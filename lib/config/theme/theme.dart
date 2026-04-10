@@ -155,14 +155,12 @@ class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: brightness == Brightness.dark
-            ? const Color(
-                0xFF30363D,
-              ) // Darker gray for better contrast in dark mode
-            : const Color(0xFFFFFFFF), // White for light mode
+            ? const Color(0xFFF8FAFC)
+            : const Color(0xFF111827),
         contentTextStyle: TextStyle(
           color: brightness == Brightness.dark
-              ? const Color(0xFFE6EDF3) // Light text in dark mode
-              : const Color(0xFF0F172A), // Dark text in light mode
+              ? const Color(0xFF0F172A)
+              : const Color(0xFFFFFFFF),
           fontWeight: FontWeight.w500,
         ),
         behavior: SnackBarBehavior.floating,

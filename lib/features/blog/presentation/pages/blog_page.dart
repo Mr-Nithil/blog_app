@@ -37,6 +37,14 @@ class _BlogPageState extends State<BlogPage> {
   @override
   Widget build(BuildContext context) {
     final appUserState = context.watch<AppUserCubit>().state;
+    final rawUserName = appUserState is AppUserLoggedIn
+        ? appUserState.user.name.trim()
+        : '';
+    final userName = appUserState is AppUserLoggedIn
+        ? (rawUserName.isNotEmpty
+              ? rawUserName
+              : appUserState.user.email.split('@').first)
+        : 'Blog User';
     final userEmail = appUserState is AppUserLoggedIn
         ? appUserState.user.email
         : 'user@example.com';
@@ -120,11 +128,19 @@ class _BlogPageState extends State<BlogPage> {
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              userEmail,
+                              userName,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              userEmail,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
                         ),
