@@ -94,7 +94,11 @@ class AuthRepositoryImpl implements AuthRepository {
       await authRemoteDataSource.signOut();
       return right(null);
     } on ServerException catch (e) {
-      return left(Failure(e.message));
+      return left(
+        Failure(
+          'Could not sign out right now. Check your internet and try again.',
+        ),
+      );
     }
   }
 }

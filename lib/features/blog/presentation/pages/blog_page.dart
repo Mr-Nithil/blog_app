@@ -1,11 +1,11 @@
 import 'package:blog_app/config/theme/app_palette.dart';
 import 'package:blog_app/core/utils/show_snackbar.dart';
-import 'package:blog_app/core/widgets/loader.dart';
 import 'package:blog_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:blog_app/features/auth/presentation/pages/login_page.dart';
 import 'package:blog_app/features/blog/presentation/bloc/blog_bloc.dart';
 import 'package:blog_app/features/blog/presentation/pages/add_blog_page.dart';
 import 'package:blog_app/features/blog/presentation/widgets/blog_card.dart';
+import 'package:blog_app/features/blog/presentation/widgets/blog_card_shimmer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -68,7 +68,18 @@ class _BlogPageState extends State<BlogPage> {
           },
           builder: (context, state) {
             if (state is BlogInitial || state is BlogLoading) {
-              return const Loader();
+              return ListView.builder(
+                itemCount: 5,
+                itemBuilder: (context, index) {
+                  return BlogCardShimmer(
+                    color: index % 3 == 0
+                        ? AppPalette.gradient1
+                        : index % 3 == 1
+                        ? AppPalette.gradient2
+                        : AppPalette.gradient3,
+                  );
+                },
+              );
             }
             if (state is BlogDisplaySuccess) {
               return ListView.builder(
