@@ -1,6 +1,7 @@
 import 'package:blog_app/core/utils/show_snackbar.dart';
 import 'package:blog_app/core/cubits/app_user/app_user_cubit.dart';
 import 'package:blog_app/core/cubits/theme/theme_cubit.dart';
+import 'package:blog_app/core/widgets/app_brand.dart';
 import 'package:blog_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:blog_app/features/auth/presentation/pages/login_page.dart';
 import 'package:blog_app/features/blog/presentation/bloc/blog_bloc.dart';
@@ -57,7 +58,7 @@ class _BlogPageState extends State<BlogPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('My Blogs'),
+          title: const AppBrand(compact: true),
           actions: [
             BlocBuilder<ThemeCubit, ThemeMode>(
               builder: (context, mode) {

@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:blog_app/config/theme/theme.dart';
 import 'package:blog_app/core/cubits/app_user/app_user_cubit.dart';
 import 'package:blog_app/core/cubits/theme/theme_cubit.dart';
 import 'package:blog_app/core/widgets/loader.dart';
+import 'package:blog_app/core/widgets/app_splash_screen.dart';
 import 'package:blog_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:blog_app/features/auth/presentation/pages/login_page.dart';
 import 'package:blog_app/features/blog/presentation/bloc/blog_bloc.dart';
@@ -34,10 +37,18 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  bool _showSplash = true;
+
   @override
   void initState() {
     super.initState();
     context.read<AuthBloc>().add(AuthIsUserLoggedIn());
+    Timer(const Duration(milliseconds: 1450), () {
+      if (!mounted) return;
+      setState(() {
+        _showSplash = false;
+      });
+    });
   }
 
   @override
@@ -46,21 +57,23 @@ class _MyAppState extends State<MyApp> {
       builder: (context, themeMode) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Blog App',
+          title: 'BlogHub',
           theme: AppTheme.lightThemeMode,
           darkTheme: AppTheme.darkThemeMode,
           themeMode: themeMode,
-          home: BlocBuilder<AppUserCubit, AppUserState>(
-            builder: (context, state) {
-              if (state is AppUserLoading) {
-                return const Scaffold(body: Loader());
-              }
-              if (state is AppUserLoggedIn) {
-                return BlogPage();
-              }
-              return LoginPage();
-            },
-          ),
+          home: _showSplash
+              ? const AppSplashScreen()
+              : BlocBuilder<AppUserCubit, AppUserState>(
+                  builder: (context, state) {
+                    if (state is AppUserLoading) {
+                      return const Scaffold(body: Loader());
+                    }
+                    if (state is AppUserLoggedIn) {
+                      return BlogPage();
+                    }
+                    return LoginPage();
+                  },
+                ),
         );
       },
     );
