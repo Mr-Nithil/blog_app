@@ -56,12 +56,15 @@ This separation keeps business logic independent from UI and infrastructure, whi
 ## Screenshots
 
 ### Authentication
+
 ![Login and SignUp](assets/screenshots/Login%20and%20SignUp.png)
 
 ### Home and Blog View
+
 ![HomeScreen and Blog View](assets/screenshots/HomeScreen%20and%20Blog%20View.png)
 
 ### Blog Creation, Theme Toggle, and Sign Out
+
 ![Blog Creation and Theme Toggle and Signout](assets/screenshots/Blog%20Creation%20and%20Theme%20Toggle%20and%20Signout.png)
 
 ## What This Project Demonstrates
