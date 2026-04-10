@@ -50,12 +50,17 @@ void _initAuth() {
     () => CurrentUser(authRepository: serviceLocator()),
   );
 
+  serviceLocator.registerFactory(
+    () => UserSignout(authRepository: serviceLocator()),
+  );
+
   serviceLocator.registerLazySingleton(
     () => AuthBloc(
       userSignup: serviceLocator(),
       userLogin: serviceLocator(),
       currentUser: serviceLocator(),
       appUserCubit: serviceLocator(),
+      userSignout: serviceLocator(),
     ),
   );
 }
