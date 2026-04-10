@@ -21,7 +21,6 @@ class BlogModel extends Blog {
       'image_url': imageUrl,
       'topics': topics,
       'updated_at': updatedAt.toIso8601String(),
-      'poster_name': posterName,
     };
   }
 
