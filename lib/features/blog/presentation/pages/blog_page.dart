@@ -44,14 +44,6 @@ class _BlogPageState extends State<BlogPage> {
           title: const Text("My Blogs"),
           actions: [
             IconButton(
-              onPressed: () async {
-                await Navigator.push(context, AddBlogPage.route());
-                if (!mounted) return;
-                context.read<BlogBloc>().add(BlogGetAll());
-              },
-              icon: const Icon(CupertinoIcons.add_circled),
-            ),
-            IconButton(
               onPressed: () {
                 context.read<AuthBloc>().add(AuthSignOut());
               },
@@ -60,6 +52,15 @@ class _BlogPageState extends State<BlogPage> {
             SizedBox(width: 15),
           ],
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            await Navigator.push(context, AddBlogPage.route());
+            if (!mounted) return;
+            context.read<BlogBloc>().add(BlogGetAll());
+          },
+          child: const Icon(CupertinoIcons.add),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         body: BlocConsumer<BlogBloc, BlogState>(
           listener: (context, state) {
             if (state is BlogFailure) {
