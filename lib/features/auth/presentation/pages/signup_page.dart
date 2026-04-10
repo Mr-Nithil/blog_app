@@ -1,4 +1,3 @@
-import 'package:blog_app/core/cubits/theme/theme_cubit.dart';
 import 'package:blog_app/core/utils/show_snackbar.dart';
 import 'package:blog_app/core/widgets/loader.dart';
 import 'package:blog_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -36,29 +35,6 @@ class _SignupPageState extends State<SignupPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          BlocBuilder<ThemeCubit, ThemeMode>(
-            builder: (context, mode) {
-              final isDark =
-                  mode == ThemeMode.dark ||
-                  (mode == ThemeMode.system &&
-                      theme.brightness == Brightness.dark);
-
-              return IconButton(
-                tooltip: isDark
-                    ? 'Switch to light mode'
-                    : 'Switch to dark mode',
-                onPressed: () => context.read<ThemeCubit>().toggleTheme(),
-                icon: Icon(
-                  isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                ),
-              );
-            },
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: BlocConsumer<AuthBloc, AuthState>(

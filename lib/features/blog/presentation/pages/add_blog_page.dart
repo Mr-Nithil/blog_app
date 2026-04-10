@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:blog_app/core/constants/constants.dart';
-import 'package:blog_app/core/cubits/theme/theme_cubit.dart';
 import 'package:blog_app/core/cubits/app_user/app_user_cubit.dart';
 import 'package:blog_app/core/utils/pick_image.dart';
 import 'package:blog_app/core/utils/show_snackbar.dart';
@@ -72,24 +71,6 @@ class _AddBlogPageState extends State<AddBlogPage> {
       appBar: AppBar(
         title: const Text('Create blog'),
         actions: [
-          BlocBuilder<ThemeCubit, ThemeMode>(
-            builder: (context, mode) {
-              final isDark =
-                  mode == ThemeMode.dark ||
-                  (mode == ThemeMode.system &&
-                      theme.brightness == Brightness.dark);
-
-              return IconButton(
-                tooltip: isDark
-                    ? 'Switch to light mode'
-                    : 'Switch to dark mode',
-                onPressed: () => context.read<ThemeCubit>().toggleTheme(),
-                icon: Icon(
-                  isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                ),
-              );
-            },
-          ),
           IconButton(
             tooltip: 'Publish blog',
             onPressed: () {

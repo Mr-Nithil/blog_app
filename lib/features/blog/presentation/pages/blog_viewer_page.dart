@@ -1,9 +1,7 @@
 import 'package:blog_app/core/utils/calculate_reading_time.dart';
 import 'package:blog_app/core/utils/format_date.dart';
-import 'package:blog_app/core/cubits/theme/theme_cubit.dart';
 import 'package:blog_app/features/blog/domain/entities/blog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BlogViewerPage extends StatelessWidget {
   static route(Blog blog) =>
@@ -16,29 +14,7 @@ class BlogViewerPage extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          BlocBuilder<ThemeCubit, ThemeMode>(
-            builder: (context, mode) {
-              final isDark =
-                  mode == ThemeMode.dark ||
-                  (mode == ThemeMode.system &&
-                      theme.brightness == Brightness.dark);
-
-              return IconButton(
-                tooltip: isDark
-                    ? 'Switch to light mode'
-                    : 'Switch to dark mode',
-                onPressed: () => context.read<ThemeCubit>().toggleTheme(),
-                icon: Icon(
-                  isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                ),
-              );
-            },
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
+      appBar: AppBar(),
       body: Scrollbar(
         child: SingleChildScrollView(
           child: Padding(
