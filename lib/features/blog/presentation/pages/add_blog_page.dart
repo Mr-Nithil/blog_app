@@ -26,7 +26,65 @@ class _AddBlogPageState extends State<AddBlogPage> {
   final formKey = GlobalKey<FormState>();
   File? image;
 
+  final List<String> availableTopics = List.of(Constants.topics);
   List<String> selectedTopics = [];
+
+  Future<void> _showAddTopicDialog() async {
+    final controller = TextEditingController();
+
+    final customTopic = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Add custom topic'),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            textInputAction: TextInputAction.done,
+            onSubmitted: (value) {
+              Navigator.pop(dialogContext, value.trim());
+            },
+            decoration: const InputDecoration(hintText: 'Enter topic name'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(dialogContext, controller.text.trim());
+              },
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+
+    // Dispose controller after the current frame to avoid conflicts with dialog animations
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.dispose();
+    });
+
+    if (customTopic == null || customTopic.isEmpty) return;
+
+    final topicMatch = availableTopics.where(
+      (topic) => topic.toLowerCase() == customTopic.toLowerCase(),
+    );
+
+    setState(() {
+      if (topicMatch.isEmpty) {
+        availableTopics.add(customTopic);
+        selectedTopics.add(customTopic);
+      } else {
+        final existing = topicMatch.first;
+        if (!selectedTopics.contains(existing)) {
+          selectedTopics.add(existing);
+        }
+      }
+    });
+  }
 
   void selectImage() async {
     final pickedImage = await pickImage();
@@ -161,16 +219,43 @@ class _AddBlogPageState extends State<AddBlogPage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    Text('Topics', style: theme.textTheme.titleMedium),
+                    Row(
+                      children: [
+                        Text('Topics', style: theme.textTheme.titleMedium),
+                        const Spacer(),
+                        IconButton(
+                          tooltip: 'Add custom topic',
+                          onPressed: _showAddTopicDialog,
+                          icon: const Icon(Icons.add_rounded),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 10),
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: Constants.topics
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: availableTopics
                           .map(
                             (topic) => FilterChip(
-                              label: Text(topic),
+                              label: Text(
+                                topic,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                               selected: selectedTopics.contains(topic),
+                              visualDensity: VisualDensity.compact,
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                              labelPadding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                              ),
+                              padding: EdgeInsets.zero,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                               onSelected: (_) {
                                 if (selectedTopics.contains(topic)) {
                                   selectedTopics.remove(topic);

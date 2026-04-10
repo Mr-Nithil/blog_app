@@ -23,20 +23,6 @@ class BlogCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: blog.topics
-                      .take(3)
-                      .map(
-                        (topic) => Chip(
-                          label: Text(topic),
-                          visualDensity: VisualDensity.compact,
-                        ),
-                      )
-                      .toList(),
-                ),
-                const SizedBox(height: 14),
                 Text(
                   blog.title,
                   maxLines: 2,
@@ -54,6 +40,34 @@ class BlogCard extends StatelessWidget {
                     color: Theme.of(context).textTheme.bodySmall?.color,
                     height: 1.45,
                   ),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: blog.topics
+                      .take(3)
+                      .map(
+                        (topic) => Chip(
+                          label: Text(
+                            topic,
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodySmall?.copyWith(fontSize: 11.5),
+                          ),
+                          visualDensity: VisualDensity.compact,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          labelPadding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                          ),
+                          padding: EdgeInsets.zero,
+                        ),
+                      )
+                      .toList(),
                 ),
                 const SizedBox(height: 16),
                 Row(
