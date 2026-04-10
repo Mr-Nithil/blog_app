@@ -1,4 +1,5 @@
 import 'package:blog_app/core/utils/show_snackbar.dart';
+import 'package:blog_app/core/cubits/app_user/app_user_cubit.dart';
 import 'package:blog_app/core/cubits/theme/theme_cubit.dart';
 import 'package:blog_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:blog_app/features/auth/presentation/pages/login_page.dart';
@@ -9,6 +10,8 @@ import 'package:blog_app/features/blog/presentation/widgets/blog_card_shimmer.da
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+enum _BlogPageMenuAction { header, toggleTheme, signOut }
+
 class BlogPage extends StatefulWidget {
   static rout() => MaterialPageRoute(builder: (context) => BlogPage());
   const BlogPage({super.key});
@@ -18,6 +21,12 @@ class BlogPage extends StatefulWidget {
 }
 
 class _BlogPageState extends State<BlogPage> {
+  Future<void> _openAddBlogPage() async {
+    await Navigator.push(context, AddBlogPage.route());
+    if (!mounted) return;
+    context.read<BlogBloc>().add(BlogGetAll());
+  }
+
   @override
   void initState() {
     super.initState();
@@ -26,6 +35,14 @@ class _BlogPageState extends State<BlogPage> {
 
   @override
   Widget build(BuildContext context) {
+    final appUserState = context.watch<AppUserCubit>().state;
+    final userName = appUserState is AppUserLoggedIn
+        ? appUserState.user.name
+        : 'Blog User';
+    final userEmail = appUserState is AppUserLoggedIn
+        ? appUserState.user.email
+        : 'user@example.com';
+
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthFailure) {
@@ -49,32 +66,118 @@ class _BlogPageState extends State<BlogPage> {
                     (mode == ThemeMode.system &&
                         Theme.of(context).brightness == Brightness.dark);
 
-                return IconButton(
-                  tooltip: isDark
-                      ? 'Switch to light mode'
-                      : 'Switch to dark mode',
-                  onPressed: () => context.read<ThemeCubit>().toggleTheme(),
-                  icon: Icon(
-                    isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                return PopupMenuButton<_BlogPageMenuAction>(
+                  tooltip: 'Open menu',
+                  icon: const Icon(Icons.menu_rounded),
+                  position: PopupMenuPosition.under,
+                  elevation: 8,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: BorderSide(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
                   ),
+                  constraints: const BoxConstraints(
+                    minWidth: 240,
+                    maxWidth: 240,
+                  ),
+                  color: Theme.of(context).colorScheme.surface,
+                  onSelected: (value) {
+                    if (value == _BlogPageMenuAction.toggleTheme) {
+                      context.read<ThemeCubit>().toggleTheme();
+                    }
+
+                    if (value == _BlogPageMenuAction.signOut) {
+                      context.read<AuthBloc>().add(AuthSignOut());
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem<_BlogPageMenuAction>(
+                      value: _BlogPageMenuAction.header,
+                      height: 176,
+                      padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CircleAvatar(
+                              radius: 26,
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.primaryContainer,
+                              foregroundColor: Theme.of(
+                                context,
+                              ).colorScheme.primary,
+                              child: Text(
+                                userName.isNotEmpty
+                                    ? userName[0].toUpperCase()
+                                    : 'U',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              userName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              userEmail,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              'Details: Profile UI preview',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const PopupMenuDivider(),
+                    PopupMenuItem<_BlogPageMenuAction>(
+                      value: _BlogPageMenuAction.toggleTheme,
+                      child: ListTile(
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                        minLeadingWidth: 0,
+                        leading: Icon(
+                          isDark
+                              ? Icons.light_mode_rounded
+                              : Icons.dark_mode_rounded,
+                          size: 20,
+                        ),
+                        title: Text(
+                          isDark
+                              ? 'Switch to light mode'
+                              : 'Switch to dark mode',
+                        ),
+                      ),
+                    ),
+                    PopupMenuItem<_BlogPageMenuAction>(
+                      value: _BlogPageMenuAction.signOut,
+                      child: const ListTile(
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                        minLeadingWidth: 0,
+                        leading: Icon(Icons.logout_rounded, size: 20),
+                        title: Text('Sign out'),
+                      ),
+                    ),
+                  ],
                 );
               },
-            ),
-            IconButton(
-              tooltip: 'Create blog',
-              onPressed: () async {
-                await Navigator.push(context, AddBlogPage.route());
-                if (!mounted) return;
-                context.read<BlogBloc>().add(BlogGetAll());
-              },
-              icon: const Icon(Icons.add_rounded),
-            ),
-            IconButton(
-              tooltip: 'Sign out',
-              onPressed: () {
-                context.read<AuthBloc>().add(AuthSignOut());
-              },
-              icon: const Icon(Icons.logout_rounded),
             ),
             const SizedBox(width: 8),
           ],
@@ -146,6 +249,16 @@ class _BlogPageState extends State<BlogPage> {
             }
             return const SizedBox.shrink();
           },
+        ),
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.only(right: 16),
+          child: FloatingActionButton(
+            tooltip: 'Create blog',
+            onPressed: _openAddBlogPage,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            child: const Icon(Icons.add_rounded),
+          ),
         ),
       ),
     );
