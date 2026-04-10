@@ -1,7 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:blog_app/core/constants/constants.dart';
 import 'package:blog_app/features/auth/data/models/user_model.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
 import 'package:blog_app/core/entities/user.dart';
 import 'package:blog_app/core/error/exception.dart';
@@ -79,13 +78,11 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, User>> _getUser(Future<User> Function() fn) async {
     try {
       if (!await (connectionChecker.isConnected)) {
-        return left(Failure("No Internet Connection!"));
+        return left(Failure(Constants.noConnectionErrorMessage));
       }
       final user = await fn();
 
       return right(user);
-    } on sb.AuthException catch (e) {
-      return left(Failure(e.message));
     } on ServerException catch (e) {
       return left(Failure(e.message));
     }
