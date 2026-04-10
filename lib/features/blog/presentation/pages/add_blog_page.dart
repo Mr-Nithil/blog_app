@@ -62,10 +62,8 @@ class _AddBlogPageState extends State<AddBlogPage> {
       },
     );
 
-    // Dispose controller after the current frame to avoid conflicts with dialog animations
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.dispose();
-    });
+    // Dispose controller after dialog animation completes (200ms delay)
+    Future.delayed(const Duration(milliseconds: 200), controller.dispose);
 
     if (customTopic == null || customTopic.isEmpty) return;
 
@@ -126,19 +124,7 @@ class _AddBlogPageState extends State<AddBlogPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create blog'),
-        actions: [
-          IconButton(
-            tooltip: 'Publish blog',
-            onPressed: () {
-              uploadBlog();
-            },
-            icon: const Icon(Icons.done_rounded),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Create blog')),
       body: BlocConsumer<BlogBloc, BlogState>(
         listener: (context, state) {
           if (state is BlogFailure) {
@@ -155,139 +141,143 @@ class _AddBlogPageState extends State<AddBlogPage> {
           if (state is BlogLoading) {
             return const Loader();
           }
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Form(
-                key: formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Cover image', style: theme.textTheme.titleMedium),
-                    const SizedBox(height: 10),
-                    GestureDetector(
-                      onTap: selectImage,
-                      child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surface,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: theme.colorScheme.outline),
-                        ),
-                        child: image != null
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
-                                child: Image.file(
-                                  image!,
+          return Scrollbar(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Cover image', style: theme.textTheme.titleMedium),
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: selectImage,
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surface,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: theme.colorScheme.outline,
+                            ),
+                          ),
+                          child: image != null
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Image.file(
+                                    image!,
+                                    height: 180,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : Container(
                                   height: 180,
                                   width: double.infinity,
-                                  fit: BoxFit.cover,
+                                  padding: const EdgeInsets.all(20),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.image_outlined,
+                                        size: 40,
+                                        color: theme.colorScheme.primary,
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        'Tap to add a cover image',
+                                        style: theme.textTheme.titleMedium,
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        'Use a clear header image for the post.',
+                                        textAlign: TextAlign.center,
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              color: theme
+                                                  .textTheme
+                                                  .bodySmall
+                                                  ?.color,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              )
-                            : Container(
-                                height: 180,
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(20),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.image_outlined,
-                                      size: 40,
-                                      color: theme.colorScheme.primary,
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      'Tap to add a cover image',
-                                      style: theme.textTheme.titleMedium,
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      'Use a clear header image for the post.',
-                                      textAlign: TextAlign.center,
-                                      style: theme.textTheme.bodyMedium
-                                          ?.copyWith(
-                                            color: theme
-                                                .textTheme
-                                                .bodySmall
-                                                ?.color,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      children: [
-                        Text('Topics', style: theme.textTheme.titleMedium),
-                        const Spacer(),
-                        IconButton(
-                          tooltip: 'Add custom topic',
-                          onPressed: _showAddTopicDialog,
-                          icon: const Icon(Icons.add_rounded),
-                          visualDensity: VisualDensity.compact,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: availableTopics
-                          .map(
-                            (topic) => FilterChip(
-                              label: Text(
-                                topic,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              selected: selectedTopics.contains(topic),
-                              visualDensity: VisualDensity.compact,
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                              labelPadding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                              ),
-                              padding: EdgeInsets.zero,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              onSelected: (_) {
-                                if (selectedTopics.contains(topic)) {
-                                  selectedTopics.remove(topic);
-                                } else {
-                                  selectedTopics.add(topic);
-                                }
-                                setState(() {});
-                              },
-                            ),
-                          )
-                          .toList(),
-                    ),
-                    const SizedBox(height: 24),
-                    BlogEditor(
-                      controller: titleController,
-                      hintText: 'Blog Title',
-                    ),
-                    const SizedBox(height: 16),
-                    BlogEditor(
-                      controller: contentController,
-                      hintText: 'Blog Content',
-                    ),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: uploadBlog,
-                        icon: const Icon(Icons.publish_rounded),
-                        label: const Text('Publish blog'),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          Text('Topics', style: theme.textTheme.titleMedium),
+                          const Spacer(),
+                          IconButton(
+                            tooltip: 'Add custom topic',
+                            onPressed: _showAddTopicDialog,
+                            icon: const Icon(Icons.add_rounded),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: availableTopics
+                            .map(
+                              (topic) => FilterChip(
+                                label: Text(
+                                  topic,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                selected: selectedTopics.contains(topic),
+                                visualDensity: VisualDensity.compact,
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                                labelPadding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                ),
+                                padding: EdgeInsets.zero,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                onSelected: (_) {
+                                  if (selectedTopics.contains(topic)) {
+                                    selectedTopics.remove(topic);
+                                  } else {
+                                    selectedTopics.add(topic);
+                                  }
+                                  setState(() {});
+                                },
+                              ),
+                            )
+                            .toList(),
+                      ),
+                      const SizedBox(height: 24),
+                      BlogEditor(
+                        controller: titleController,
+                        hintText: 'Blog Title',
+                      ),
+                      const SizedBox(height: 16),
+                      BlogEditor(
+                        controller: contentController,
+                        hintText: 'Blog Content',
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: uploadBlog,
+                          icon: const Icon(Icons.publish_rounded),
+                          label: const Text('Publish blog'),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

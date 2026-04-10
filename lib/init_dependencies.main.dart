@@ -14,14 +14,21 @@ Future<void> initDependencies() async {
   Hive.defaultDirectory = (await getApplicationDocumentsDirectory()).path;
 
   serviceLocator.registerLazySingleton(() => Hive.box(name: 'blogs'));
+  serviceLocator.registerLazySingleton<Box>(
+    () => Hive.box(name: 'preferences'),
+    instanceName: 'preferences',
+  );
 
   serviceLocator.registerFactory(() => InternetConnection());
   serviceLocator.registerFactory<ConnectionChecker>(
     () => ConnectionCheckerImpl(internetConnection: serviceLocator()),
   );
 
+  serviceLocator.registerLazySingleton(
+    () =>
+        ThemeCubit(preferencesBox: serviceLocator(instanceName: 'preferences')),
+  );
   serviceLocator.registerLazySingleton(() => AppUserCubit());
-  serviceLocator.registerLazySingleton(() => ThemeCubit());
 
   _initAuth();
   _initBlog();

@@ -12,9 +12,10 @@ class BlogViewerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final readTime = calculateReadingTime(blog.content);
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(title: const Text('Blog post')),
       body: Scrollbar(
         child: SingleChildScrollView(
           child: Padding(
@@ -36,45 +37,72 @@ class BlogViewerPage extends StatelessWidget {
                   children: blog.topics
                       .map(
                         (topic) => Chip(
-                          label: Text(topic),
+                          label: Text(
+                            topic,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                           visualDensity: VisualDensity.compact,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          labelPadding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                          ),
+                          padding: EdgeInsets.zero,
                         ),
                       )
                       .toList(),
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 18,
-                      backgroundColor: theme.colorScheme.primaryContainer,
-                      foregroundColor: theme.colorScheme.primary,
-                      child: Text(
-                        (blog.posterName?.isNotEmpty ?? false)
-                            ? blog.posterName![0].toUpperCase()
-                            : 'B',
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    border: Border.all(color: theme.colorScheme.outline),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundColor: theme.colorScheme.primaryContainer,
+                        foregroundColor: theme.colorScheme.primary,
+                        child: Text(
+                          (blog.posterName?.isNotEmpty ?? false)
+                              ? blog.posterName![0].toUpperCase()
+                              : 'B',
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            blog.posterName?.isNotEmpty == true
-                                ? blog.posterName!
-                                : 'Blog author',
-                            style: theme.textTheme.titleMedium,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${formatDateByDDMMMYYYY(blog.updatedAt)} · ${calculateReadingTime(blog.content)} min read',
-                            style: theme.textTheme.bodySmall,
-                          ),
-                        ],
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              blog.posterName?.isNotEmpty == true
+                                  ? blog.posterName!
+                                  : 'Blog author',
+                              style: theme.textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${formatDateByDDMMMYYYY(blog.updatedAt)} · $readTime min read',
+                              style: theme.textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 20),
                 ClipRRect(

@@ -154,8 +154,17 @@ class AppTheme {
         foregroundColor: Colors.white,
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: elevatedSurfaceColor,
-        contentTextStyle: TextStyle(color: primaryTextColor),
+        backgroundColor: brightness == Brightness.dark
+            ? const Color(
+                0xFF30363D,
+              ) // Darker gray for better contrast in dark mode
+            : const Color(0xFFFFFFFF), // White for light mode
+        contentTextStyle: TextStyle(
+          color: brightness == Brightness.dark
+              ? const Color(0xFFE6EDF3) // Light text in dark mode
+              : const Color(0xFF0F172A), // Dark text in light mode
+          fontWeight: FontWeight.w500,
+        ),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),

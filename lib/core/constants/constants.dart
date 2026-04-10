@@ -14,9 +14,6 @@ class Constants {
     'Education',
     'Finance',
     'Lifestyle',
-    'Sports',
-    'Marketing',
-    'Gaming',
   ];
 
   static const noConnectionErrorMessage = "No Internet Connection!";
