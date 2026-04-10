@@ -11,7 +11,7 @@ import 'package:blog_app/features/blog/presentation/widgets/blog_card_shimmer.da
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-enum _BlogPageMenuAction { header, toggleTheme, signOut }
+enum _BlogPageMenuAction { toggleTheme, signOut }
 
 class BlogPage extends StatefulWidget {
   static rout() => MaterialPageRoute(builder: (context) => BlogPage());
@@ -94,9 +94,9 @@ class _BlogPageState extends State<BlogPage> {
                   },
                   itemBuilder: (context) => [
                     PopupMenuItem<_BlogPageMenuAction>(
-                      value: _BlogPageMenuAction.header,
-                      height: 176,
-                      padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
+                      enabled: false,
+                      height: 124,
+                      padding: const EdgeInsets.fromLTRB(14, 12, 14, 6),
                       child: SizedBox(
                         width: double.infinity,
                         child: Column(
@@ -104,25 +104,18 @@ class _BlogPageState extends State<BlogPage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             CircleAvatar(
-                              radius: 26,
+                              radius: 24,
                               backgroundColor: Theme.of(
                                 context,
                               ).colorScheme.primaryContainer,
                               foregroundColor: Theme.of(
                                 context,
                               ).colorScheme.primary,
-                              child: Text(
-                                userName.isNotEmpty
-                                    ? userName[0].toUpperCase()
-                                    : 'U',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
+                              child: const Icon(Icons.person_rounded, size: 24),
                             ),
-                            const SizedBox(height: 12),
+                            const SizedBox(height: 10),
                             Text(
-                              userName,
+                              "Nithil Sheshan",
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.center,
@@ -136,18 +129,13 @@ class _BlogPageState extends State<BlogPage> {
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
-                            const SizedBox(height: 10),
-                            Text(
-                              'Details: Profile UI preview',
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
                           ],
                         ),
                       ),
                     ),
                     const PopupMenuDivider(),
                     PopupMenuItem<_BlogPageMenuAction>(
+                      height: 44,
                       value: _BlogPageMenuAction.toggleTheme,
                       child: ListTile(
                         dense: true,
@@ -167,6 +155,7 @@ class _BlogPageState extends State<BlogPage> {
                       ),
                     ),
                     PopupMenuItem<_BlogPageMenuAction>(
+                      height: 44,
                       value: _BlogPageMenuAction.signOut,
                       child: const ListTile(
                         dense: true,
