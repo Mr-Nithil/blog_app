@@ -6,7 +6,6 @@ import 'package:blog_app/features/blog/presentation/bloc/blog_bloc.dart';
 import 'package:blog_app/features/blog/presentation/pages/add_blog_page.dart';
 import 'package:blog_app/features/blog/presentation/widgets/blog_card.dart';
 import 'package:blog_app/features/blog/presentation/widgets/blog_card_shimmer.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -44,6 +43,14 @@ class _BlogPageState extends State<BlogPage> {
           title: const Text("My Blogs"),
           actions: [
             IconButton(
+              onPressed: () async {
+                await Navigator.push(context, AddBlogPage.route());
+                if (!mounted) return;
+                context.read<BlogBloc>().add(BlogGetAll());
+              },
+              icon: const Icon(Icons.add),
+            ),
+            IconButton(
               onPressed: () {
                 context.read<AuthBloc>().add(AuthSignOut());
               },
@@ -52,15 +59,6 @@ class _BlogPageState extends State<BlogPage> {
             SizedBox(width: 15),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            await Navigator.push(context, AddBlogPage.route());
-            if (!mounted) return;
-            context.read<BlogBloc>().add(BlogGetAll());
-          },
-          child: const Icon(CupertinoIcons.add),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         body: BlocConsumer<BlogBloc, BlogState>(
           listener: (context, state) {
             if (state is BlogFailure) {
