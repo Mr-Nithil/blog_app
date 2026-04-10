@@ -1,10 +1,13 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 
-import 'package:blog_app/core/error/exception.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:blog_app/core/error/exception.dart';
 import 'package:blog_app/core/error/failure.dart';
+import 'package:blog_app/core/network/connection_checker.dart';
+import 'package:blog_app/features/blog/data/datasources/blog_local_data_source.dart';
 import 'package:blog_app/features/blog/data/datasources/blog_remote_data_source.dart';
 import 'package:blog_app/features/blog/data/models/blog_model.dart';
 import 'package:blog_app/features/blog/domain/Repository/blog_repository.dart';
@@ -12,7 +15,13 @@ import 'package:blog_app/features/blog/domain/entities/blog.dart';
 
 class BlogRepositoryImpl implements BlogRepository {
   final BlogRemoteDataSource blogRemoteDataSource;
-  BlogRepositoryImpl({required this.blogRemoteDataSource});
+  final BlogLocalDataSource blogLocalDataSource;
+  final ConnectionChecker connectionChecker;
+  BlogRepositoryImpl({
+    required this.blogRemoteDataSource,
+    required this.blogLocalDataSource,
+    required this.connectionChecker,
+  });
   @override
   Future<Either<Failure, Blog>> uploadBlog({
     required File image,
@@ -22,6 +31,10 @@ class BlogRepositoryImpl implements BlogRepository {
     required List<String> topics,
   }) async {
     try {
+      if (!await (connectionChecker.isConnected)) {
+        return left(Failure("No Internet Connection!"));
+      }
+
       BlogModel blogModel = BlogModel(
         id: Uuid().v1(),
         posterId: posterId,
@@ -50,7 +63,13 @@ class BlogRepositoryImpl implements BlogRepository {
   @override
   Future<Either<Failure, List<Blog>>> getAllBlogs() async {
     try {
+      if (!await (connectionChecker.isConnected)) {
+        final blogs = blogLocalDataSource.loadBlogs();
+
+        return right(blogs);
+      }
       final blogs = await blogRemoteDataSource.getAllBlogs();
+      blogLocalDataSource.uploadLocalBlogs(blogs: blogs);
 
       return right(blogs);
     } on ServerException catch (e) {

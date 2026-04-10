@@ -1,18 +1,41 @@
-import 'package:blog_app/core/error/exception.dart';
-import 'package:blog_app/core/error/failure.dart';
-import 'package:blog_app/features/auth/data/datasources/auth_remote_data_source.dart';
-import 'package:blog_app/core/entities/user.dart';
-import 'package:blog_app/features/auth/domain/repository/auth_repository.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:blog_app/features/auth/data/models/user_model.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
+import 'package:blog_app/core/entities/user.dart';
+import 'package:blog_app/core/error/exception.dart';
+import 'package:blog_app/core/error/failure.dart';
+import 'package:blog_app/core/network/connection_checker.dart';
+import 'package:blog_app/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:blog_app/features/auth/domain/repository/auth_repository.dart';
+
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource authRemoteDataSource;
-  AuthRepositoryImpl({required this.authRemoteDataSource});
+  final ConnectionChecker connectionChecker;
+  AuthRepositoryImpl({
+    required this.authRemoteDataSource,
+    required this.connectionChecker,
+  });
 
   @override
   Future<Either<Failure, User>> currentUser() async {
     try {
+      if (!await (connectionChecker.isConnected)) {
+        final session = authRemoteDataSource.currentUserSession;
+
+        if (session == null) {
+          return left(Failure("User not logged in !"));
+        }
+
+        return right(
+          UserModel(
+            id: session.user.id,
+            name: "",
+            email: session.user.email ?? "",
+          ),
+        );
+      }
       final user = await authRemoteDataSource.getCurrentUserData();
 
       if (user == null) {
@@ -55,6 +78,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   Future<Either<Failure, User>> _getUser(Future<User> Function() fn) async {
     try {
+      if (!await (connectionChecker.isConnected)) {
+        return left(Failure("No Internet Connection!"));
+      }
       final user = await fn();
 
       return right(user);
