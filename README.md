@@ -2,6 +2,8 @@
 
 BlogHub is a full-stack Flutter blogging application built to demonstrate production-style mobile app development using Clean Architecture, BLoC state management, and offline-first data handling.
 
+![BlogHub Overview](assets/screenshots/BlogHub.png)
+
 ## Overview
 
 The app supports secure user authentication, blog publishing with image uploads, topic-based organization, and a responsive reading experience with caching support. It was designed with a feature-first structure so each module stays isolated, testable, and easy to scale.
